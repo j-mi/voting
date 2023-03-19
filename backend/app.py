@@ -86,10 +86,21 @@ def send_email(subject, body, to_email, from_email, from_password):
     server.sendmail(from_email, to_email, text)
     server.quit()
 
+# def get_local_ip():
+#     hostname = socket.gethostname()
+#     local_ip = socket.gethostbyname(hostname)
+#     return local_ip
+
 def get_local_ip():
-    hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(hostname)
-    return local_ip
+    try:
+        # Connect to a public-facing server to get the local IP address
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            local_ip = s.getsockname()[0]
+        return local_ip
+    except Exception as e:
+        print(f"Error getting local IP address: {e}")
+        return "0.0.0.0"
 
 def send_ip_daily(to_email, from_email, from_password):
     finnish_tz = pytz.timezone('Europe/Helsinki')
