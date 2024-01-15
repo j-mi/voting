@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+table {
+  border-collapse: separate;
+  border-spacing: 10px;
+  width: 100%;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: #f2f2f2;
+}

@@ -18,7 +18,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "conference_rooms.db")}'
-CORS(app)
+CORS(app, origins=["http://192.168.50.45:3000"])
 db.init_app(app)
 
 @app.before_first_request
@@ -33,6 +33,7 @@ def get_conference_rooms():
 @app.route('/api/conference_rooms', methods=['POST'])
 def add_conference_room():
     room_name = request.json['name']
+    description = request.json['description']
 
     # Check for similar conference room names (70% accuracy)
     existing_rooms = ConferenceRoom.query.all()
@@ -40,7 +41,7 @@ def add_conference_room():
         if similar(room.name, room_name) > 0.7:
             return jsonify({'message': 'A similar conference room name already exists.'}), 400
 
-    new_room = ConferenceRoom(name=room_name)
+    new_room = ConferenceRoom(name=room_name, description=description)
     db.session.add(new_room)
     db.session.commit()
 
@@ -53,7 +54,7 @@ def vote():
 
     # Check if user has voted more than 3 times
     user_votes = Vote.query.filter_by(ip=user_ip).count()
-    if user_votes >= 3:
+    if user_votes >= 5:
         return jsonify({'message': 'You have reached the maximum number of votes.'}), 400
 
     # Increment the vote count and store the user's IP
@@ -130,4 +131,4 @@ if __name__ == '__main__':
 
     # Schedule the daily IP address email at 06:00 Finnish local time
     send_ip_daily(to_email, from_email, from_password)
-    app.run(debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', debug=True, use_reloader=False)

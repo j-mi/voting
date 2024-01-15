@@ -6,6 +6,7 @@ db = SQLAlchemy()
 class ConferenceRoom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(300), nullable=True)
     votes = db.Column(db.Integer, default=0)
     vote_ips = db.relationship('Vote', backref='conference_room', lazy=True)
 
@@ -14,6 +15,7 @@ class ConferenceRoom(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'description': self.description,
             'votes': self.votes,
         }
 
